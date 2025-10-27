@@ -238,6 +238,24 @@ get_fdt() {
   [ -n "${FDT_FILENAME}" ] && echo "${FDT_FILENAME}" || true
 }
 
+get_fdt_type() {
+  local FDT_TYPE=""
+
+  if [[ -n "${SUBDEVICE}" ]]; then
+    FDT_TYPE=$(xmlstarlet sel -t -v "//dtb/${DEVICE}/${SUBDEVICE}/@fdt_type" "${DTBXML}" 2>/dev/null)
+  fi
+
+  if [[ -z "${FDT_TYPE}" ]]; then
+    FDT_TYPE=$(xmlstarlet sel -t -v "//dtb/${DEVICE}/@fdt_type" "${DTBXML}" 2>/dev/null)
+  fi
+
+  if [[ "${FDT_TYPE}" == "fdtdir" ]]; then
+    echo "FDTDIR"
+  else
+    echo "FDT"
+  fi
+}
+
 generate_grub_cfg_body() {
   cat << EOF
 insmod part_gpt
