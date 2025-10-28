@@ -1,9 +1,33 @@
+From 5d588a92d8f68df469c2acf50b2f3f8179a615cb Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Mon, 27 Oct 2025 17:39:32 +0800
+Subject: [PATCH] arm64: dts: qcom: Add AYN Odin2 Portal
+
+Signed-off-by: Teguh Sobirin <teguh@sobir.in>
+---
+ arch/arm64/boot/dts/qcom/Makefile             |   1 +
+ .../boot/dts/qcom/qcs8550-ayn-odin2portal.dts | 238 ++++++++++++++++++
+ 2 files changed, 239 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2portal.dts
+
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index 010c44b21573..356209923ce0 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -128,6 +128,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= qcs8300-ride.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= qcs8550-aim300-aiot.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= qcs8550-ayn-odin2.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= qcs8550-ayn-odin2mini.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= qcs8550-ayn-odin2portal.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= qcs9100-ride.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= qcs9100-ride-r3.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= qdu1000-idp.dtb
 diff --git a/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2portal.dts b/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2portal.dts
 new file mode 100644
-index 000000000000..f04c275966e4
+index 000000000000..ac9b786e626e
 --- /dev/null
 +++ b/arch/arm64/boot/dts/qcom/qcs8550-ayn-odin2portal.dts
-@@ -0,0 +1,289 @@
+@@ -0,0 +1,238 @@
 +// SPDX-License-Identifier: BSD-3-Clause
 +/*
 + * Copyright (c) 2025, Teguh Sobirin.
@@ -40,66 +64,14 @@ index 000000000000..f04c275966e4
 +		gpio = <&tlmm 142 GPIO_ACTIVE_HIGH>;
 +		enable-active-high;
 +	};
-+
-+	multi-ledr1 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r1";
-+		leds = <&ledr_r4>, <&ledr_g4>, <&ledr_b4>;
-+	};
-+
-+	multi-ledl1 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l1";
-+		leds = <&ledl_r4>, <&ledl_g4>, <&ledl_b4>;
-+	};
-+
-+	multi-ledr2 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r2";
-+		leds = <&ledr_r1>, <&ledr_g1>, <&ledr_b1>;
-+	};
-+
-+	multi-ledl2 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l2";
-+		leds = <&ledl_r1>, <&ledl_g1>, <&ledl_b1>;
-+	};
-+
-+	multi-ledr3 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r3";
-+		leds = <&ledr_r2>, <&ledr_g2>, <&ledr_b2>;
-+	};
-+
-+	multi-ledl3 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l3";
-+		leds = <&ledl_r2>, <&ledl_g2>, <&ledl_b2>;
-+	};
-+
-+	multi-ledr4 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r4";
-+		leds = <&ledr_r3>, <&ledr_g3>, <&ledr_b3>;
-+	};
-+
-+	multi-ledl4 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l4";
-+		leds = <&ledl_r3>, <&ledl_g3>, <&ledl_b3>;
-+	};
 +};
 +
 +&display_panel {
 +	compatible = "chipone,icna3512";
++
++	pinctrl-0 = <&dsi_p_rst_active>, <&dsi_p_te_active>;
++	pinctrl-1 = <&dsi_p_rst_suspend>, <&dsi_p_te_suspend>;
++	pinctrl-names = "default", "sleep";
 +
 +	vdd-supply = <&vreg_l11b_1p2>;
 +	vddio-supply = <&vreg_l12b_1p8>;
@@ -185,7 +157,7 @@ index 000000000000..f04c275966e4
 +};
 +
 +&i2c4 {
-+	touchscreen: touchscreen@38 {
++	touchscreen@38 {
 +		compatible = "focaltech,ft5426";
 +		reg = <0x38>;
 +		#address-cells = <1>;
@@ -199,8 +171,8 @@ index 000000000000..f04c275966e4
 +		vcc-supply = <&vreg_l14b_3p2>;
 +		iovcc-supply = <&vreg_l12b_1p8>;
 +
-+		pinctrl-0 = <&ts_int_default &ts_rst_default>;
-+		pinctrl-1 = <&ts_int_sleep &ts_rst_sleep>;
++		pinctrl-0 = <&ts_p_rst_default &ts_p_int_default>;
++		pinctrl-1 = <&ts_p_rst_sleep &ts_p_int_sleep>;
 +		pinctrl-names = "default", "sleep";
 +
 +		touchscreen-size-x = <1080>;
@@ -293,3 +265,7 @@ index 000000000000..f04c275966e4
 +&spk_amp_r {
 +	firmware-name = "qcom/sm8550/ayn/odin2portal/aw883xx_acf.bin";
 +};
++
+-- 
+2.34.1
+
